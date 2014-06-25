@@ -7,6 +7,11 @@
 //
 
 #import "AppDelegate.h"
+#import "AFURLRequestSerialization.h"
+#import "AFURLSessionManager.h"
+
+static NSString * const API_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/api/index.php/";
+static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/uploads/";
 
 @implementation AppDelegate
 
@@ -62,14 +67,34 @@
   
   [self.metadataSearch disableUpdates];
   
-  NSUInteger i=0;
-  for (i=0; i < [self.metadataSearch resultCount]; i++) {
-    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
-    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
-    NSLog(@"result at %lu - %@",i,displayName);
-  }
+  NSMetadataItem *newestScreenshot = [self.metadataSearch resultAtIndex:([self.metadataSearch resultCount] - 1)];
+  NSString *path = [newestScreenshot valueForAttribute:(NSString *)kMDItemPath];
+  NSString *fileName = [newestScreenshot valueForAttribute:(NSString *)kMDItemFSName];
+  NSLog(@"result at %@", path);
   
-    [self.metadataSearch enableUpdates];
+  NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:[NSString stringWithFormat:@"%@me/screenshots", API_BASE_URL] parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+    [formData appendPartWithFileURL:[NSURL fileURLWithPath:path] name:@"file" fileName:fileName mimeType:@"image/jpeg" error:nil];
+  } error:nil];
+  
+  AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+  NSProgress *progress = nil;
+  
+  NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request progress:&progress completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+    if (error) {
+      NSLog(@"Error: %@", error);
+    } else {
+      NSString *urlString = [NSString stringWithFormat:@"%@%@", UPLOAD_BASE_URL, [responseObject objectForKey:@"name"]];
+      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//            NSLog(@"%@", urlString);
+      NSURL *URL = [NSURL URLWithString:urlString];
+      
+      [[NSWorkspace sharedWorkspace] openURL:URL];
+    }
+  }];
+  [uploadTask resume];
+
+  
+  [self.metadataSearch enableUpdates];
   
 }
 
@@ -89,13 +114,15 @@
   // Process the content. In this case the application simply
   // iterates over the content, printing the display name key for
   // each image
-  NSUInteger i=0;
-  for (i=0; i < [self.metadataSearch resultCount]; i++) {
-    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
-    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
-    NSLog(@"result at %lu - %@",i,displayName);
-  }
+//  NSUInteger i=0;
+//  for (i=0; i < [self.metadataSearch resultCount]; i++) {
+//    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
+//    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
+//    NSLog(@"result at %lu - %@",i,displayName);
+//  }
   
+
+
   
   // Remove the notifications to clean up after ourselves.
   // Also release the metadataQuery.

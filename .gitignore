@@ -1,2 +1,5 @@
-
+Pods
 *.xcbkptlist
+Screenshot.xcodeproj/project.pbxproj
+*.xcworkspace
+Screenshot.xcodeproj/project.pbxproj
