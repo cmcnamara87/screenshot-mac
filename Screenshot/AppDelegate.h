@@ -12,6 +12,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 @property (strong, nonatomic) NSStatusItem *statusItem;
+@property (strong, nonatomic) NSMenu *menu;
 @property (nonatomic, strong) NSMetadataQuery *metadataSearch;
 
 @end

@@ -10,6 +10,7 @@
 #import "AFURLRequestSerialization.h"
 #import "AFURLSessionManager.h"
 
+static NSString * const COLLECTION_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/#/collections/";
 static NSString * const API_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/api/index.php/";
 static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/uploads/";
 
@@ -22,6 +23,14 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   self.statusItem = [statusBar statusItemWithLength:NSVariableStatusItemLength];
   self.statusItem.highlightMode = YES;
   [self.statusItem setImage:[NSImage imageNamed:@"icon.png"]];
+  
+  self.menu = [[NSMenu alloc] init];
+//  [self.menu addItemWithTitle:@"Open Web App" action:@selector(openWebApp:) keyEquivalent:@""];
+  
+//  [self.menu addItemWithTitle:@"Log In" action:@selector(logIn:) keyEquivalent:@""];
+//  [self.menu addItem:[NSMenuItem separatorItem]];
+  [self.menu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@""];
+  self.statusItem.menu = self.menu;
   
   // Insert code here to initialize your application
   // Create the metadata query instance. The metadataSearch @property is
@@ -89,9 +98,8 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
     if (error) {
       NSLog(@"Error: %@", error);
     } else {
-      NSString *urlString = [NSString stringWithFormat:@"%@%@", UPLOAD_BASE_URL, [responseObject objectForKey:@"name"]];
-      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-//            NSLog(@"%@", urlString);
+      NSString *urlString = [NSString stringWithFormat:@"%@%@", COLLECTION_BASE_URL, [responseObject objectForKey:@"id"]];
+//      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       NSURL *URL = [NSURL URLWithString:urlString];
       
       [[NSWorkspace sharedWorkspace] openURL:URL];
