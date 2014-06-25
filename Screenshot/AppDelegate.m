@@ -17,6 +17,12 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+  NSStatusBar *statusBar = [NSStatusBar systemStatusBar];
+  self.statusItem.title = @"";
+  self.statusItem = [statusBar statusItemWithLength:NSVariableStatusItemLength];
+  self.statusItem.highlightMode = YES;
+  [self.statusItem setImage:[NSImage imageNamed:@"icon.png"]];
+  
   // Insert code here to initialize your application
   // Create the metadata query instance. The metadataSearch @property is
   // declared as retain
