@@ -9,10 +9,17 @@
 #import "AppDelegate.h"
 #import "AFURLRequestSerialization.h"
 #import "AFURLSessionManager.h"
+#import "AFHTTPRequestOperationManager.h"
+#import "LoginWindowController.h"
 
 static NSString * const COLLECTION_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/#/collections/";
 static NSString * const API_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/api/index.php/";
 static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/uploads/";
+
+@interface AppDelegate ()
+  @property (strong, nonatomic) LoginWindowController *logInWindowController;
+  @property (strong, nonatomic) NSDictionary *user;
+@end
 
 @implementation AppDelegate
 
@@ -27,9 +34,10 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   self.menu = [[NSMenu alloc] init];
 //  [self.menu addItemWithTitle:@"Open Web App" action:@selector(openWebApp:) keyEquivalent:@""];
   
-//  [self.menu addItemWithTitle:@"Log In" action:@selector(logIn:) keyEquivalent:@""];
-//  [self.menu addItem:[NSMenuItem separatorItem]];
+  [self.menu addItemWithTitle:@"Log In" action:@selector(logIn:) keyEquivalent:@""];
+  [self.menu addItem:[NSMenuItem separatorItem]];
   [self.menu addItemWithTitle:@"Quit" action:@selector(terminate:) keyEquivalent:@""];
+  [self.menu addItemWithTitle:@"hi kelvin Project" action:@selector(terminate:) keyEquivalent:@"" ];
   self.statusItem.menu = self.menu;
   
   // Insert code here to initialize your application
@@ -64,16 +72,59 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   
   // Configure the sorting of the results so it will order the results by the
   // display name
-//  NSSortDescriptor *sortKeys = [[NSSortDescriptor alloc] initWithKey:(id)kMDItemDisplayName
-//                                                          ascending:YES];
-//  [self.metadataSearch setSortDescriptors:[NSArray arrayWithObject:sortKeys]];
+  NSSortDescriptor *sortKeys = [[NSSortDescriptor alloc] initWithKey:(id)kMDItemFSCreationDate
+                                                          ascending:YES];
+  [self.metadataSearch setSortDescriptors:[NSArray arrayWithObject:sortKeys]];
   
   // Begin the asynchronous query
   
   NSLog(@"Starting query!");
   [self.metadataSearch startQuery];
   
+  
+  NSURL *baseUrl = [NSURL URLWithString:API_BASE_URL];
+  self.manager = [[AFHTTPRequestOperationManager manager] initWithBaseURL:baseUrl];
+  
 }
+
+- (void)logIn:(id)sender
+{
+  NSLog(@"Show login");
+  if (!self.logInWindowController) {
+    NSLog(@"making contrlller");
+    self.logInWindowController = [[LoginWindowController alloc] init];
+  }
+  [self.logInWindowController showWindow:nil];
+  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+  //  [self.logInWindowController showWindowWithCompletionHandler:^(NSURLCredential *credential){
+  //    [[KMFeedbinCredentialStorage sharedCredentialStorage] setCredential:credential];
+  //    [self getUnreadEntries:self];
+  //    [self setupMenu];
+  //  }];
+  //  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+}
+
+- (void)loggedIn:(NSDictionary *)user
+{
+  self.user = user;
+  NSLog(@"Logged in as %@", [user objectForKey:@"name"]);
+  //  [self setupMenu];
+  //  [self.menu removeItemAtIndex:1];
+  //  [self.menu insertItem:[NSMenuItem separatorItem] atIndex:1];
+  
+  //  [self.menu insertItem:[NSMenuItem separatorItem] atIndex:3];
+  //  [menu addItemWithTitle:@"Refresh" action:@selector(getUnreadEntries:) keyEquivalent:@""];
+  //  if ([[[KMFeedbinCredentialStorage sharedCredentialStorage] credential] hasPassword]) {
+  //    [menu addItemWithTitle:@"Log Out" action:@selector(logOut:) keyEquivalent:@""];
+  //  } else {
+  //    [menu addItemWithTitle:@"Log In" action:@selector(logIn:) keyEquivalent:@""];
+  //  }
+  //  [self.menu addItem:[NSMenuItem separatorItem]];
+  //  [self.menu addItem:[NSMenuItem separatorItem]];
+  
+  //  [self setupProjects];
+}
+
 
 // Method invoked when notifications of content batches have been received
 - (void)queryDidUpdate:sender;
@@ -82,6 +133,14 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   
   [self.metadataSearch disableUpdates];
   
+  NSUInteger i=0;
+  for (i=0; i < [self.metadataSearch resultCount]; i++) {
+    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
+    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
+    NSLog(@"result at %lu - %@",i,displayName);
+  }
+  
+  /*
   NSMetadataItem *newestScreenshot = [self.metadataSearch resultAtIndex:([self.metadataSearch resultCount] - 1)];
   NSString *path = [newestScreenshot valueForAttribute:(NSString *)kMDItemPath];
   NSString *fileName = [newestScreenshot valueForAttribute:(NSString *)kMDItemFSName];
@@ -99,14 +158,13 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
       NSLog(@"Error: %@", error);
     } else {
       NSString *urlString = [NSString stringWithFormat:@"%@%@", COLLECTION_BASE_URL, [responseObject objectForKey:@"id"]];
-//      urlString = [urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
       NSURL *URL = [NSURL URLWithString:urlString];
       
       [[NSWorkspace sharedWorkspace] openURL:URL];
     }
   }];
   [uploadTask resume];
-
+   */
   
   [self.metadataSearch enableUpdates];
   
@@ -149,5 +207,7 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
 //                                                object:self.metadataSearch];
 //  self.metadataSearch=nil;
 }
+
+
 
 @end
