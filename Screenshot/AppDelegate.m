@@ -109,8 +109,9 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   self.user = user;
   NSLog(@"Logged in as %@", [user objectForKey:@"name"]);
   //  [self setupMenu];
-  //  [self.menu removeItemAtIndex:1];
-  //  [self.menu insertItem:[NSMenuItem separatorItem] atIndex:1];
+  [self.menu removeItemAtIndex:0];
+  [self.menu insertItemWithTitle:@"Open Web App" action:@selector(openWebApp:) keyEquivalent:@"" atIndex:0];
+//  [self.menu insertItem:[NSMenuItem separatorItem] atIndex:1];
   
   //  [self.menu insertItem:[NSMenuItem separatorItem] atIndex:3];
   //  [menu addItemWithTitle:@"Refresh" action:@selector(getUnreadEntries:) keyEquivalent:@""];
@@ -125,6 +126,13 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   //  [self setupProjects];
 }
 
+- (void)openWebApp:(id)sender
+{
+//  NSString *urlString = [NSString stringWithFormat:@"%@users/%@/projects",BASE_URL_STRING, [self.user objectForKey:@"id"]];
+  NSURL *URL = [NSURL URLWithString:@"http://www.google.com"];
+  
+  [[NSWorkspace sharedWorkspace] openURL:URL];
+}
 
 // Method invoked when notifications of content batches have been received
 - (void)queryDidUpdate:sender;
