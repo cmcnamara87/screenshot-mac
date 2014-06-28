@@ -141,14 +141,14 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
   
   [self.metadataSearch disableUpdates];
   
-  NSUInteger i=0;
-  for (i=0; i < [self.metadataSearch resultCount]; i++) {
-    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
-    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
-    NSLog(@"result at %lu - %@",i,displayName);
-  }
+//  NSUInteger i=0;
+//  for (i=0; i < [self.metadataSearch resultCount]; i++) {
+//    NSMetadataItem *theResult = [self.metadataSearch resultAtIndex:i];
+//    NSString *displayName = [theResult valueForAttribute:(NSString *)kMDItemDisplayName];
+//    NSLog(@"result at %lu - %@",i,displayName);
+//  }
   
-  /*
+
   NSMetadataItem *newestScreenshot = [self.metadataSearch resultAtIndex:([self.metadataSearch resultCount] - 1)];
   NSString *path = [newestScreenshot valueForAttribute:(NSString *)kMDItemPath];
   NSString *fileName = [newestScreenshot valueForAttribute:(NSString *)kMDItemFSName];
@@ -172,7 +172,7 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
     }
   }];
   [uploadTask resume];
-   */
+
   
   [self.metadataSearch enableUpdates];
   
