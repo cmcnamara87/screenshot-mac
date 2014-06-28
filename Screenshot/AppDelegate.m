@@ -12,6 +12,7 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "LoginWindowController.h"
 
+static NSString * const BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/#/";
 static NSString * const COLLECTION_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/#/collections/";
 static NSString * const API_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/api/index.php/";
 static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeast-2.compute.amazonaws.com/screenshot/uploads/";
@@ -128,8 +129,8 @@ static NSString * const UPLOAD_BASE_URL = @"http://ec2-54-206-66-123.ap-southeas
 
 - (void)openWebApp:(id)sender
 {
-//  NSString *urlString = [NSString stringWithFormat:@"%@users/%@/projects",BASE_URL_STRING, [self.user objectForKey:@"id"]];
-  NSURL *URL = [NSURL URLWithString:@"http://www.google.com"];
+  NSString *urlString = [NSString stringWithFormat:@"%@me/collections", BASE_URL];
+  NSURL *URL = [NSURL URLWithString:urlString];
   
   [[NSWorkspace sharedWorkspace] openURL:URL];
 }
